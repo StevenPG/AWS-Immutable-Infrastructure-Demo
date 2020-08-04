@@ -1,1 +1,4 @@
-// install java
+- name: Install latest version of "openjdk-11-jdk"
+  apt:
+    name: openjdk-11-jdk
+    state: latest
