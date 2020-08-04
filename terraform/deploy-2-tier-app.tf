@@ -89,10 +89,28 @@ resource "aws_security_group" "ubuntu" {
   }
 }
 
+// We could hard-code an AMI, but this is a good example of searching for the one!
+// This sets a variable that we can use inside terraform, and we will use for our EC2
+data "aws_ami" "ubuntu" {
+    most_recent = true
+
+    filter {
+        name   = "name"
+        values = ["ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"]
+    }
+
+    filter {
+        name   = "virtualization-type"
+        values = ["hvm"]
+    }
+
+    owners = ["099720109477"] # Canonical
+}
+
 // Deploy a t2.micro EC2 instance
 resource "aws_instance" "ubuntu" {
   key_name      = aws_key_pair.generated_key.key_name
-  ami           = "ami-03ba3948f6c37a4b0"
+  ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
 
   tags = {
@@ -115,24 +133,13 @@ resource "aws_instance" "ubuntu" {
     volume_type = "gp2"
     volume_size = 30
   }
+
+  provisioner "local-exec" {
+    command = "echo ${aws_instance.ubuntu} >> server.txt"
+  }
 }
 
 resource "aws_eip" "ubuntu" {
   vpc      = true
   instance = aws_instance.ubuntu.id
 }
-
-# provisioner "remote-exec" {
-#     inline = ["sudo dnf -y install python"]
-
-#     connection {
-#       type        = "ssh"
-#       user        = "fedora"
-#       private_key = "${file(var.ssh_key_private)}"
-#     }
-#   }
-
-#   provisioner "local-exec" {
-#       // add in variable for spring environment variable
-#     command = "ansible-playbook -u fedora -i '${self.public_ip},' --private-key ${var.ssh_key_private} provision.yml" 
-#   }
