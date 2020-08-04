@@ -44,7 +44,7 @@ resource "aws_key_pair" "generated_key" {
 // Output the private key for us to use, this should be removed in theory
 // the private key can be pulled from the state file at any time
 output "ec2_private_key" {
-  value = "${tls_private_key.our_ec2_keypair}"
+  value = tls_private_key.our_ec2_keypair
   description = "The private key we can use to SSH into our newly generated EC2 instance."
 }
 
@@ -124,7 +124,7 @@ resource "aws_instance" "ubuntu" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = file("key")
+    private_key = tls_private_key.our_ec2_keypair.private_key_pem
     host        = self.public_ip
   }
 

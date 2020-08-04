@@ -3,6 +3,9 @@ FROM ubuntu:latest
 RUN apt-get update
 ENV TERRAFORM_VERSION=0.12.29
 
+# Create directory for AWS credentials
+RUN mkdir /root/.aws
+
 # Create a working directory
 RUN mkdir /working-directory
 WORKDIR /working-directory
@@ -13,7 +16,6 @@ RUN apt-get install -y ansible wget zip git openssh-client python-cryptography p
 # Install Terraform
 RUN mkdir /terraform
 RUN cd /terraform && wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-RUN ls -la /terraform
 RUN unzip /terraform/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /bin/
 RUN rm /terraform/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 
