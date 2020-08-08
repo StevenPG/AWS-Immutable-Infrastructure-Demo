@@ -5,31 +5,31 @@ provider "aws" {
 }
 
 // Empty variable to hold the keyname so we can use it elsewhere
-variable "key_name" {
+variable "key-name" {
   description = "what should we name our key? This is an example of input variable..."
 }
 
 // Deploy an RDS instance
-resource "aws_db_instance" "pg_rds" {
+resource "aws_db_instance" "pg-rds" {
   allocated_storage    = 5
   storage_type         = "gp2"
-  engine               = "mysql"
-  engine_version       = "5.7"
+  engine               = "postgres"
+  engine_version       = "11.5"
   instance_class       = "db.t2.micro"
-  name                 = "mydb"
-  username             = "foo"
-  password             = "foobarbaz"
-  parameter_group_name = "default.mysql5.7"
+  name                 = "demo_postgres"
+  username             = "postgres"
+  password             = "Drone$areKool"
+  skip_final_snapshot  = true
 }
 
 // Output the RDS endpoint to us in case we want to access it directly
 output "rds_endpoint" {
-  value = aws_db_instance.pg_rds.endpoint
+  value = aws_db_instance.pg-rds.endpoint
   description = "The RDS instance the app will communicate with."
 }
 
 // Generate a new public/private keypair. This is immutable infrastructure so
-// we probably won't be SSHing in anyway.
+// we probably won't be SSHing in by hand anyway.
 resource "tls_private_key" "our_ec2_keypair" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -37,7 +37,7 @@ resource "tls_private_key" "our_ec2_keypair" {
 
 // Configure a keypair for the EC2 we're about to create
 resource "aws_key_pair" "generated_key" {
-  key_name   = var.key_name
+  key_name   = var.key-name
   public_key = tls_private_key.our_ec2_keypair.public_key_openssh
 }
 
@@ -96,7 +96,7 @@ data "aws_ami" "ubuntu" {
 
     filter {
         name   = "name"
-        values = ["ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"]
+        values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
     }
 
     filter {
@@ -128,18 +128,7 @@ resource "aws_instance" "ubuntu" {
     host        = self.public_ip
   }
 
-  ebs_block_device {
-    device_name = "/dev/sda1"
-    volume_type = "gp2"
-    volume_size = 30
-  }
-
   provisioner "local-exec" {
-    command = "echo ${aws_instance.ubuntu} >> server.txt"
+    command = "rm ../ansible/hosts; echo \"[appserver]\" >> ../ansible/hosts ;echo ${self.public_ip} >> ../ansible/hosts"
   }
-}
-
-resource "aws_eip" "ubuntu" {
-  vpc      = true
-  instance = aws_instance.ubuntu.id
 }

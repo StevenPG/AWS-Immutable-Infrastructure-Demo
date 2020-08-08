@@ -1,0 +1,1 @@
+ansible-playbook -i hosts --private-key ./priv.key site.yml

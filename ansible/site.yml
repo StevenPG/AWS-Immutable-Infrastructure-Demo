@@ -1,10 +1,12 @@
 ---
 # This playbook deploys a simple standalone Tomcat 7 server.
 
-- hosts: tomcat-servers
-  remote_user: root
+- hosts: appserver
+  remote_user: ubuntu
   become: yes
   become_method: sudo
 
   roles:
+    - up_to_date
     - java
+    

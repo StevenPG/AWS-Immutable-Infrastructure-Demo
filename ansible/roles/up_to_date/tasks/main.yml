@@ -1,3 +1,9 @@
+- name: Add JDK11 repository
+  apt_repository:
+    repo: ppa:openjdk-r/ppa
+    state: present
+
 - name: Run the equivalent of "apt-get update" as a separate step
   apt:
+    upgrade: yes
     update_cache: yes
