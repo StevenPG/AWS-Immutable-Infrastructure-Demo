@@ -1,0 +1,10 @@
+[Unit]
+Description=demoapp
+After=syslog.target
+
+[Service]
+User=root
+ExecStart=/usr/bin/java -jar /var/demoapp/demo-0.0.1-SNAPSHOT.jar --spring.config.location=/var/demoapp/config/
+
+[Install]
+WantedBy=multi-user.target

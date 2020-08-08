@@ -9,4 +9,6 @@
   roles:
     - up_to_date
     - java
+    - boot-deploy-setup
+    - demo-app-deployment
     

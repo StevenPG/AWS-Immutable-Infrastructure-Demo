@@ -1,0 +1,21 @@
+- name: Copy file with owner and permissions
+  copy:
+    src: demoapp.service
+    dest: /etc/systemd/system
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy file with owner and permissions
+  copy:
+    src: application.properties
+    dest: /var/demoapp/config
+    owner: skyvue-tomcat
+    group: skyvue-tomcat
+    mode: '0744'
+
+- name: Make sure a service is running
+  systemd:
+    state: started
+    name: demoapp
+    enabled: yes
