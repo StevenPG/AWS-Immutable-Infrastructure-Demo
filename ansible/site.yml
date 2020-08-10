@@ -1,5 +1,5 @@
 ---
-# This playbook deploys a simple standalone Tomcat 7 server.
+# Also - https://github.com/remyma/ansible-springboot
 
 - hosts: appserver
   remote_user: ubuntu
